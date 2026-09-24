@@ -20,7 +20,86 @@
         overflow-x: hidden;
     }
     
-    /* 1. 처음에 부드럽게 나타나는 등장 효과 (Fade-in & Slide-up) */
+    /* --- 1. 인트로(문 열림) 화면 디자인 --- */
+    #introScreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+    .door {
+        position: absolute;
+        top: 0;
+        width: 50%;
+        height: 100%;
+        background-color: #fbfaf6; /* 한옥 창호지 톤의 따뜻한 베이지 */
+        box-shadow: inset 0 0 30px rgba(0,0,0,0.03);
+        transition: transform 1.8s cubic-bezier(0.77, 0, 0.175, 1); /* 부드럽게 스르륵 열리는 가속도 */
+        z-index: 10001;
+    }
+    /* 문틈(가운데 선) 효과 */
+    .door-left {
+        left: 0;
+        border-right: 2px solid #e2ddcf; 
+    }
+    .door-right {
+        right: 0;
+        border-left: 2px solid #e2ddcf;
+    }
+    
+    /* 인트로 텍스트 및 버튼 구역 */
+    .intro-content {
+        position: relative;
+        z-index: 10002;
+        text-align: center;
+        transition: opacity 0.5s ease-out;
+    }
+    .typing-container {
+        font-size: 18px;
+        color: #444;
+        margin-bottom: 40px;
+        line-height: 1.8;
+        min-height: 60px;
+    }
+    .cursor {
+        display: inline-block;
+        width: 1.5px;
+        height: 18px;
+        background-color: #444;
+        vertical-align: middle;
+        animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    
+    .open-btn {
+        background-color: transparent;
+        border: 1px solid #888;
+        color: #555;
+        padding: 12px 28px;
+        font-size: 15px;
+        font-family: 'Gowun Dodum', sans-serif;
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.5s ease;
+        border-radius: 4px;
+    }
+    .open-btn.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .open-btn:hover {
+        background-color: #f4efea;
+    }
+
+
+    /* --- 2. 본문 편지 디자인 --- */
     .letter-container {
         max-width: 480px;
         width: 100%;
@@ -29,19 +108,8 @@
         text-align: center;
         padding-bottom: 60px;
         position: relative;
-        
-        opacity: 0; /* 처음엔 투명하게 */
-        transform: translateY(30px); /* 살짝 아래에 배치 */
-        animation: fadeUp 1.5s ease-out forwards; /* 1.5초 동안 서서히 등장 */
     }
     
-    @keyframes fadeUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
     .bgm-section {
         padding: 20px;
         font-size: 13px;
@@ -91,15 +159,15 @@
         font-size: 17px;
     }
 
-    /* 2. 나뭇잎 애니메이션 설정 */
+    /* --- 3. 나뭇잎 애니메이션 설정 --- */
     .leaf-container {
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         pointer-events: none;
-        z-index: 9999;
+        z-index: 10;
         overflow: hidden;
     }
     .leaf {
@@ -107,37 +175,40 @@
         top: -10%;
         user-select: none;
         pointer-events: none;
-        animation: fall linear infinite;
+        animation: fall linear forwards;
         opacity: 0.7;
     }
     @keyframes fall {
-        0% {
-            opacity: 0;
-            transform: translateY(0) rotate(0deg) translateX(0);
-        }
-        15% {
-            opacity: 0.75;
-        }
-        85% {
-            opacity: 0.75;
-        }
-        100% {
-            opacity: 0;
-            transform: translateY(105vh) rotate(360deg) translateX(60px);
-        }
+        0% { opacity: 0; transform: translateY(0) rotate(0deg) translateX(0); }
+        15% { opacity: 0.75; }
+        85% { opacity: 0.75; }
+        100% { opacity: 0; transform: translateY(105vh) rotate(360deg) translateX(60px); }
     }
 </style>
 </head>
 <body>
 
-<!-- 떨어지는 나뭇잎 영역 -->
-<div class="leaf-container" id="leafContainer"></div>
+<!-- 인트로 (문 열림 & 타이핑 효과) -->
+<div id="introScreen">
+    <div class="door door-left" id="doorLeft"></div>
+    <div class="door door-right" id="doorRight"></div>
+    
+    <div class="intro-content" id="introContent">
+        <div class="typing-container">
+            <span id="typedText"></span><span class="cursor"></span>
+        </div>
+        <button class="open-btn" id="openBtn" onclick="openDoors()">초대장 열어보기</button>
+    </div>
+</div>
 
 <div class="letter-container">
-    <!-- 배경음악 -->
+    <!-- 떨어지는 나뭇잎 영역 -->
+    <div class="leaf-container" id="leafContainer"></div>
+
+    <!-- 배경음악 (문 열림 버튼 클릭 시 재생) -->
     <div class="bgm-section">
         <p>배경음악이 준비 되었습니다.</p>
-        <audio controls loop style="width: 80%; height: 35px;">
+        <audio id="bgmAudio" controls loop style="width: 80%; height: 35px;">
             <source src="https://cdn.salondeletter.com/cdn/sound/w/letter/Gentle%20Steps%20in%20Sunlight.mp3" type="audio/mp3">
         </audio>
     </div>
@@ -167,7 +238,7 @@
         함께 하시기를 기원합니다.
     </div>
 
-    <!-- 혼주 및 신랑신부 정보 (수정 완료) -->
+    <!-- 혼주 및 신랑신부 정보 -->
     <div class="names">
         <div class="name-row">
             <span>정종석 · 소봉효</span>
@@ -186,7 +257,57 @@
 </div>
 
 <script>
-    // 나뭇잎 자동 생성 스크립트
+    // 1. 타이핑 효과 스크립트
+    const textMsg = "정룡원 그리고 임다은,\n저희 결혼합니다.";
+    let charIndex = 0;
+    
+    function typeWriter() {
+        if (charIndex < textMsg.length) {
+            let char = textMsg.charAt(charIndex);
+            // 줄바꿈 기호(\n)를 만나면 <br> 태그로 변환
+            if (char === '\n') {
+                document.getElementById("typedText").innerHTML += "<br>";
+            } else {
+                document.getElementById("typedText").innerHTML += char;
+            }
+            charIndex++;
+            setTimeout(typeWriter, 120); // 타이핑 속도 조절
+        } else {
+            // 타이핑이 끝나면 버튼 서서히 나타남
+            setTimeout(() => {
+                document.getElementById("openBtn").classList.add("show");
+            }, 500);
+        }
+    }
+    
+    // 페이지 로딩 완료 후 타이핑 시작
+    window.onload = () => {
+        setTimeout(typeWriter, 500);
+    };
+
+    // 2. 문 열림 효과 & 브금 재생 & 나뭇잎 시작
+    function openDoors() {
+        // 문 양쪽으로 슬라이드
+        document.getElementById("doorLeft").style.transform = "translateX(-100%)";
+        document.getElementById("doorRight").style.transform = "translateX(100%)";
+        
+        // 글씨와 버튼 숨기기
+        document.getElementById("introContent").style.opacity = "0";
+        
+        // 브금 자동 재생
+        const bgm = document.getElementById("bgmAudio");
+        if(bgm) { bgm.play(); }
+
+        // 나뭇잎 효과 시작 (문 열린 후부터 내리도록)
+        setTimeout(startLeaves, 500);
+        
+        // 인트로 화면의 터치 방해 제거
+        setTimeout(() => {
+            document.getElementById("introScreen").style.pointerEvents = "none";
+        }, 1000);
+    }
+
+    // 3. 나뭇잎 자동 생성 스크립트
     const container = document.getElementById('leafContainer');
     const leafIcons = ['🍃', '🌿', '🍀', '🍃'];
 
@@ -207,15 +328,15 @@
 
         container.appendChild(leaf);
 
-        setTimeout(() => {
-            leaf.remove();
-        }, (duration + delay) * 1000);
+        setTimeout(() => { leaf.remove(); }, (duration + delay) * 1000);
     }
 
-    for (let i = 0; i < 12; i++) {
-        setTimeout(createLeaf, i * 350);
+    function startLeaves() {
+        for (let i = 0; i < 12; i++) {
+            setTimeout(createLeaf, i * 350);
+        }
+        setInterval(createLeaf, 800);
     }
-    setInterval(createLeaf, 800);
 </script>
 
 </body>
