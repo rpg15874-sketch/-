@@ -19,6 +19,8 @@
         color: #333;
         overflow-x: hidden;
     }
+    
+    /* 1. 처음에 부드럽게 나타나는 등장 효과 (Fade-in & Slide-up) */
     .letter-container {
         max-width: 480px;
         width: 100%;
@@ -27,7 +29,19 @@
         text-align: center;
         padding-bottom: 60px;
         position: relative;
+        
+        opacity: 0; /* 처음엔 투명하게 */
+        transform: translateY(30px); /* 살짝 아래에 배치 */
+        animation: fadeUp 1.5s ease-out forwards; /* 1.5초 동안 서서히 등장 */
     }
+    
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     .bgm-section {
         padding: 20px;
         font-size: 13px;
@@ -67,12 +81,6 @@
     .name-row {
         margin-bottom: 25px;
     }
-    .flower-icon {
-        width: 14px;
-        vertical-align: middle;
-        margin: 0 2px;
-        opacity: 0.8;
-    }
     .relation {
         font-size: 14px;
         color: #666;
@@ -83,14 +91,14 @@
         font-size: 17px;
     }
 
-    /* 나뭇잎 애니메이션 설정 */
+    /* 2. 나뭇잎 애니메이션 설정 */
     .leaf-container {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        pointer-events: none; /* 클릭/터치 방해 금지 */
+        pointer-events: none;
         z-index: 9999;
         overflow: hidden;
     }
@@ -159,21 +167,15 @@
         함께 하시기를 기원합니다.
     </div>
 
-    <!-- 혼주 및 신랑신부 정보 -->
+    <!-- 혼주 및 신랑신부 정보 (수정 완료) -->
     <div class="names">
         <div class="name-row">
-            <span>
-                <img class="flower-icon" src="https://salondeletter.com/img/flower/chrysanthemum.png" alt="국화">故 정종석 · 
-                <img class="flower-icon" src="https://salondeletter.com/img/flower/chrysanthemum.png" alt="국화">故 소봉효
-            </span>
+            <span>정종석 · 소봉효</span>
             <span class="relation">의 아들</span>
             <span class="name-bold">정룡원</span>
         </div>
         <div class="name-row">
-            <span>
-                <img class="flower-icon" src="https://salondeletter.com/img/flower/chrysanthemum.png" alt="국화">故 임헌길 · 
-                <img class="flower-icon" src="https://salondeletter.com/img/flower/chrysanthemum.png" alt="국화">故 김영혜
-            </span>
+            <span>임헌길 · 김영혜</span>
             <span class="relation">의 딸</span>
             <span class="name-bold">임다은</span>
         </div>
@@ -194,8 +196,8 @@
         leaf.innerText = leafIcons[Math.floor(Math.random() * leafIcons.length)];
         
         const startLeft = Math.random() * 100;
-        const size = Math.random() * 10 + 14; // 크기 조절 (14px ~ 24px)
-        const duration = Math.random() * 5 + 6; // 떨어지는 속도 (6초 ~ 11초)
+        const size = Math.random() * 10 + 14; 
+        const duration = Math.random() * 5 + 6; 
         const delay = Math.random() * 2;
 
         leaf.style.left = startLeft + 'vw';
@@ -210,7 +212,6 @@
         }, (duration + delay) * 1000);
     }
 
-    // 처음 12개 생성 후 주기적으로 추가
     for (let i = 0; i < 12; i++) {
         setTimeout(createLeaf, i * 350);
     }
