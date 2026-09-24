@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>감사의 마음을 전합니다</title>
-<!-- 프롬투데이 감성의 고운돋움(Gowun Dodum) 폰트 적용 -->
+<!-- 고운돋움 폰트 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
@@ -12,29 +12,35 @@
     body {
         margin: 0;
         padding: 0;
-        font-family: 'Gowun Dodum', sans-serif; /* 폰트 변경 */
+        font-family: 'Gowun Dodum', sans-serif;
         background-color: #eeeeee;
         display: flex;
         justify-content: center;
         color: #333;
+        overflow-x: hidden;
     }
     .letter-container {
         max-width: 480px;
         width: 100%;
-        background-color: #fbfaf6; /* 프롬투데이 느낌의 따뜻한 아이보리/베이지 배경 */
+        background-color: #fbfaf6;
         box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         text-align: center;
         padding-bottom: 60px;
+        position: relative;
     }
     .bgm-section {
         padding: 20px;
         font-size: 13px;
         color: #888;
+        position: relative;
+        z-index: 2;
     }
     .header-msg {
         padding: 20px;
         font-size: 14px;
         color: #666;
+        position: relative;
+        z-index: 2;
     }
     .main-img, .footer-img {
         width: 100%;
@@ -76,9 +82,48 @@
         font-weight: bold;
         font-size: 17px;
     }
+
+    /* 나뭇잎 애니메이션 설정 */
+    .leaf-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* 클릭/터치 방해 금지 */
+        z-index: 9999;
+        overflow: hidden;
+    }
+    .leaf {
+        position: absolute;
+        top: -10%;
+        user-select: none;
+        pointer-events: none;
+        animation: fall linear infinite;
+        opacity: 0.7;
+    }
+    @keyframes fall {
+        0% {
+            opacity: 0;
+            transform: translateY(0) rotate(0deg) translateX(0);
+        }
+        15% {
+            opacity: 0.75;
+        }
+        85% {
+            opacity: 0.75;
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(105vh) rotate(360deg) translateX(60px);
+        }
+    }
 </style>
 </head>
 <body>
+
+<!-- 떨어지는 나뭇잎 영역 -->
+<div class="leaf-container" id="leafContainer"></div>
 
 <div class="letter-container">
     <!-- 배경음악 -->
@@ -90,9 +135,9 @@
     </div>
 
     <!-- 상단 텍스트 -->
-    <div class="header-msg">자리를 빛내주셔서 감사합니다💍.</div>
+    <div class="header-msg">자리를 빛내주셔서 감사합니다🍀</div>
 
-    <!-- 첫 번째 사진 (첨부해주신 파일로 교체) -->
+    <!-- 첫 번째 사진 -->
     <img class="main-img" src="KakaoTalk_20260924_123601317.jpg" alt="첫번째 사진">
 
     <!-- 본문 내용 -->
@@ -134,9 +179,43 @@
         </div>
     </div>
 
-    <!-- 마지막 사진 (첨부해주신 파일로 교체) -->
+    <!-- 마지막 사진 -->
     <img class="footer-img" src="KakaoTalk_20260924_123601317_01.jpg" alt="마지막 사진">
 </div>
+
+<script>
+    // 나뭇잎 자동 생성 스크립트
+    const container = document.getElementById('leafContainer');
+    const leafIcons = ['🍃', '🌿', '🍀', '🍃'];
+
+    function createLeaf() {
+        const leaf = document.createElement('div');
+        leaf.classList.add('leaf');
+        leaf.innerText = leafIcons[Math.floor(Math.random() * leafIcons.length)];
+        
+        const startLeft = Math.random() * 100;
+        const size = Math.random() * 10 + 14; // 크기 조절 (14px ~ 24px)
+        const duration = Math.random() * 5 + 6; // 떨어지는 속도 (6초 ~ 11초)
+        const delay = Math.random() * 2;
+
+        leaf.style.left = startLeft + 'vw';
+        leaf.style.fontSize = size + 'px';
+        leaf.style.animationDuration = duration + 's';
+        leaf.style.animationDelay = delay + 's';
+
+        container.appendChild(leaf);
+
+        setTimeout(() => {
+            leaf.remove();
+        }, (duration + delay) * 1000);
+    }
+
+    // 처음 12개 생성 후 주기적으로 추가
+    for (let i = 0; i < 12; i++) {
+        setTimeout(createLeaf, i * 350);
+    }
+    setInterval(createLeaf, 800);
+</script>
 
 </body>
 </html>
